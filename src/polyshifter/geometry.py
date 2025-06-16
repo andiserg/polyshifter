@@ -117,4 +117,14 @@ class Polygon:
         if new_points_coords_list:
             new_points_coords_list.append(new_points_coords_list[0])
 
-        return Polygon(new_points_coords_list)
+        res = Polygon(new_points_coords_list)
+
+        if not all((
+            next_segment.is_same_dir(res.segments[next_index]),
+            prev_segment.is_same_dir(res.segments[prev_index])
+        )):
+            raise ValueError(
+                f"Offset segment {segment_index} does not preserve the original polygon's direction."
+            )
+
+        return res
