@@ -5,15 +5,18 @@ from polyshifter.models import Polygon, Segment, Point
 
 @dataclass(slots=True, frozen=True)
 class OutputData:
-    polygon: Polygon
+    orig_polygon: Polygon
+    result_polygon: Polygon
     offset_arrow: Segment
 
 
 def offset_segment(
-    polygon: Polygon,
+    coords: list[tuple[float, float]],
     segment_index: int,
     offset_magnitude: float,
 ) -> OutputData:
+    polygon = Polygon(coords)
+
     if not (0 <= segment_index < len(polygon.segments)):
         raise IndexError("Segment index out of bounds.")
 
@@ -59,16 +62,16 @@ def offset_segment(
     new_points_coords_list[next_index] = (new_p2.x, new_p2.y)
     new_points_coords_list.append(new_points_coords_list[0])
 
-    res = Polygon(new_points_coords_list)
+    res_polygon = Polygon(new_points_coords_list)
 
     # Check that neighbor segments preserve the original polygon's direction
     if not all((
-        polygon.segments[next_index].is_same_dir(res.segments[next_index]),
-        polygon.segments[prev_index].is_same_dir(res.segments[prev_index]),
+        polygon.segments[next_index].is_same_dir(res_polygon.segments[next_index]),
+        polygon.segments[prev_index].is_same_dir(res_polygon.segments[prev_index]),
     )):
         raise ValueError(
             f"Offset segment {segment_index} does not "
             f"preserve the original polygon's direction.",
         )
 
-    return OutputData(res, Segment(center_before, center_after))
+    return OutputData(polygon, res_polygon, Segment(center_before, center_after))

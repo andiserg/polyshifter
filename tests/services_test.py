@@ -10,14 +10,12 @@ from tests.params import POLYGON_OFFSET_PARAMS
 
 @pytest.mark.parametrize("points, seg_idx, offset, res_points", POLYGON_OFFSET_PARAMS)
 def test_map(points, seg_idx, offset, res_points):
-    polygon = Polygon(points)
-
     if res_points is ValueError:
         with pytest.raises(ValueError):
-            offset_segment(polygon, seg_idx, offset)
+            offset_segment(points, seg_idx, offset)
     else:
-        res = offset_segment(polygon, seg_idx, offset)
-        compare_polygons(res.polygon, Polygon(res_points))
+        res = offset_segment(points, seg_idx, offset)
+        compare_polygons(res.result_polygon, Polygon(res_points))
 
 def compare_polygons(p1: Polygon, p2: Polygon, accuracy: int = 3):
     assert len(p1.points) == len(p2.points), "Polygons have different number of points."

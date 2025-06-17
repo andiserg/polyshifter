@@ -2,8 +2,6 @@ from ast import literal_eval
 from collections.abc import Callable
 from typing import ParamSpec, TypeVar, Concatenate
 
-from polyshifter.models import Polygon
-
 P = ParamSpec("P")
 T = TypeVar("T")
 
@@ -24,17 +22,17 @@ def mapped_input(
             print(f"Unexpected error: {e}. Please try again.")
 
 
-def map_polygon(value: str) -> Polygon:
+def map_coords(value: str) -> list[tuple[float, float]]:
     points_coords = literal_eval(value)
 
     if not isinstance(points_coords, list) or not all(
-            isinstance(p, tuple) and len(p) == 2 and
-            all(isinstance(coord, (int, float)) for coord in p)
-            for p in points_coords
+        isinstance(p, tuple) and len(p) == 2 and
+        all(isinstance(coord, (int, float)) for coord in p)
+        for p in points_coords
     ):
         raise ValueError("Invalid polygon format.")
 
-    return Polygon(points_coords)
+    return points_coords
 
 
 def map_segment_index(value: str, polygon_segments_count: int) -> int:

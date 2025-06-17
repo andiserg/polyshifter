@@ -3,14 +3,14 @@ from polyshifter.services import offset_segment
 from polyshifter.visual import PolygonsPlotVisualization
 
 def main() -> None:
-    original_polygon = cli.mapped_input(
+    coords = cli.mapped_input(
         "Enter polygon points as a list of tuples: ",
-        cli.map_polygon,
+        cli.map_coords,
     )
     segment_index = cli.mapped_input(
         "Enter polygon segment index: ",
         cli.map_segment_index,
-        len(original_polygon.segments),
+        len(coords) - 1 ,
     )
     offset_magnitude = cli.mapped_input(
         "Enter polygon offset magnitude: ",
@@ -18,11 +18,11 @@ def main() -> None:
     )
 
     try:
-        result = offset_segment(original_polygon, segment_index, offset_magnitude)
+        result = offset_segment(coords, segment_index, offset_magnitude)
 
         visualization = PolygonsPlotVisualization(
-            original_polygon=original_polygon,
-            offset_polygon=result.polygon,
+            original_polygon=result.orig_polygon,
+            offset_polygon=result.result_polygon,
             offset_arrow=result.offset_arrow,
         )
 
