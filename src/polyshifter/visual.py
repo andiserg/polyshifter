@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from matplotlib import pyplot as plt
+from matplotlib.axes import Axes
 
 from polyshifter.models import Polygon
 
@@ -10,26 +11,30 @@ class PolygonsPlotVisualization:
     original_polygon: Polygon
     offset_polygon: Polygon
 
-    def plot(self):
+    def plot(self) -> None:
         fig, ax = plt.subplots(figsize=(10, 8))
-        self._plot_polygon(ax, self.offset_polygon, 'red', 'Offset Polygon')
-        self._plot_polygon(ax, self.original_polygon, 'blue', 'Original Polygon')
+        self._plot_polygon(ax, self.offset_polygon, "red", "Offset Polygon")
+        self._plot_polygon(ax, self.original_polygon, "blue", "Original Polygon")
 
-        ax.set_title('Polygon Segment Offset')
-        ax.set_xlabel('X-coordinate')
-        ax.set_ylabel('Y-coordinate')
+        ax.set_title("Polygon Segment Offset")
+        ax.set_xlabel("X-coordinate")
+        ax.set_ylabel("Y-coordinate")
         ax.legend()
         ax.grid(True)
-        ax.set_aspect('equal', adjustable='box')
+        ax.set_aspect("equal", adjustable="box")
         plt.show()
 
-    def _plot_polygon(self, ax, polygon: Polygon, color, label):
-        x_coords = [p.x for p in polygon.points]
-        y_coords = [p.y for p in polygon.points]
+    def _plot_polygon(self, ax: Axes, polygon: Polygon, color: str, label: str) -> None:
+        x_coords = [float(p.x) for p in polygon.points]
+        y_coords = [float(p.y) for p in polygon.points]
 
-        ax.plot(x_coords, y_coords, color=color, label=label, marker='o', linestyle='-')
+        ax.plot(x_coords, y_coords, color=color, label=label, marker="o", linestyle="-")
 
         for i, p in enumerate(polygon.points):
-            if i == len(polygon.points) - 1 and polygon.points[0] == polygon.points[-1] and len(polygon.points) > 1:
+            if all((
+                i == len(polygon.points) - 1,
+                polygon.points[0] == polygon.points[-1],
+                len(polygon.points) > 1,
+            )):
                 continue
-            ax.text(p.x, p.y, f'({p.x:2f},{p.y:2f})', fontsize=8, ha='right')
+            ax.text(float(p.x), float(p.y), f"({p.x:2f},{p.y:2f})", fontsize=8, ha="right")

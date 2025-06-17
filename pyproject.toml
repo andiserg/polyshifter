@@ -9,7 +9,6 @@ authors = [
 requires-python = ">=3.12"
 dependencies = [
     "matplotlib>=3.10.3",
-    "pytest>=8.4.0",
 ]
 
 [project.scripts]
@@ -18,3 +17,55 @@ polyshifter = "polyshifter:main"
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "mypy>=1.16.1",
+    "pytest>=8.4.0",
+    "ruff>=0.11.13",
+]
+
+[tool.ruff.lint]
+select = ['ALL']
+fixable = [
+    'Q000',
+    'Q001',
+    'COM812',
+    'D400',
+    'PT001',
+]
+ignore = [
+    'T201', # print-statements
+    'D', # pydocstyle
+    'B904', # raise without from inside except
+    'FIX002', # line contains todo
+    'BLE001', # blind-except
+    'FBT001', # Boolean positional value in function definition
+    'FBT002', # Boolean default positional argument in function definition'
+    'FBT003', # Boolean positional value in function call
+    'PLR2004', # Magic value without constant variable
+
+    # Rules emitting false alerts
+    'I001', # unsorted-imports
+
+    # Rules that are not applicable in the project for now
+    'TID252',  # relative-imports
+    'D104',  # undocumented-public-package
+    'ARG',  # flake8-unused-arguments
+    'D100', # undocumented-public-module
+
+    # Strange and obscure rules that will never be turned on
+    'FA100', # future-rewritable-type-annotation
+    'TRY003', # raise-vanilla-args
+    'TRY201', # verbose-raise
+    'EM', # flake8-errmsg
+    'PERF203', # try-except-in-loop
+    'TC001', # typing-only-first-party-import
+    'TD002', # missing-todo-author
+    'PTH201', # path-constructor-current-directory
+    'RSE102', # path-constructor-current-directory
+    'FA102',  # future-required-type-annotation
+    'TD003', # missing-todo-link
+    'PTH123', # builtin-open
+    'G004', # f-strings in logging
+]
