@@ -1,14 +1,20 @@
-import math
 from dataclasses import dataclass
+from fractions import Fraction
 
 
-@dataclass(slots=True, frozen=True)
+@dataclass(slots=True)
 class Point:
-    x: float
-    y: float
+    x: Fraction
+    y: Fraction
+
+    def __init__(self, x: float | Fraction, y: float | Fraction):
+        self.x = Fraction(str(x))
+        self.y = Fraction(str(y))
 
     def distance_to(self, other):
-        return math.sqrt((self.x - other.x) ** 2 + (self.y - other.y) ** 2)
+        dx = self.x - other.x
+        dy = self.y - other.y
+        return Fraction(dx * dx + dy * dy) ** Fraction(1, 2)
 
     def get_normalized(self):
         length = self.distance_to(Point(0, 0))
@@ -25,9 +31,9 @@ class Segment:
     def direction_vector(self):
         return Point(self.p2.x - self.p1.x, self.p2.y - self.p1.y)
 
-    def perpendicular_vector(self) -> Point:
+    def perpendicular_vector(self, negative: bool) -> Point:
         direction = self.direction_vector()
-        return Point(-direction.y, direction.x)
+        return Point(-direction.y, direction.x) if negative else Point(direction.y, -direction.x)
 
     def line_intersection(self, segment: 'Segment') -> Point | None:
         x1, y1 = self.p1.x, self.p1.y
@@ -39,7 +45,7 @@ class Segment:
         if den == 0:
             return None
 
-        t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / den
+        t = Fraction(((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)), den)
 
         intersection_x = x1 + t * (x2 - x1)
         intersection_y = y1 + t * (y2 - y1)
@@ -49,8 +55,8 @@ class Segment:
     def is_same_dir(self, segment: 'Segment') -> bool:
         dir1 = self.direction_vector().get_normalized()
         dir2 = segment.direction_vector().get_normalized()
-        return abs(dir1.x * dir2.y - dir1.y * dir2.x) < 1e-9
-
+        dot = dir1.x * dir2.x + dir1.y * dir2.y
+        return abs(dir1.x * dir2.y - dir1.y * dir2.x) < 1e-9 and dot > 0
 
 
 @dataclass(slots=True)
@@ -79,19 +85,21 @@ class Polygon:
         if not (0 <= segment_index < len(self.segments)):
             raise IndexError("Segment index out of bounds.")
 
+        offset_magnitude = Fraction(str(offset_magnitude))
+
         original_segment = self.segments[segment_index]
-        perp_vec = original_segment.perpendicular_vector()
+        perp_vec = original_segment.perpendicular_vector(offset_magnitude < 0)
 
         norm_perp = perp_vec.get_normalized()
 
         offset_segment = Segment(
             Point(
-                original_segment.p1.x + norm_perp.x * offset_magnitude,
-                original_segment.p1.y + norm_perp.y * offset_magnitude
+                original_segment.p1.x + norm_perp.x * abs(offset_magnitude),
+                original_segment.p1.y + norm_perp.y * abs(offset_magnitude),
             ),
             Point(
-                original_segment.p2.x + norm_perp.x * offset_magnitude,
-                original_segment.p2.y + norm_perp.y * offset_magnitude
+                original_segment.p2.x + norm_perp.x * abs(offset_magnitude),
+                original_segment.p2.y + norm_perp.y * abs(offset_magnitude)
             )
         )
 
