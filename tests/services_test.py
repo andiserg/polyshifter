@@ -16,8 +16,8 @@ def test_map(points, seg_idx, offset, res_points):
         with pytest.raises(ValueError):
             offset_segment(polygon, seg_idx, offset)
     else:
-        res_polygon = offset_segment(polygon, seg_idx, offset)
-        compare_polygons(res_polygon, Polygon(res_points))
+        res = offset_segment(polygon, seg_idx, offset)
+        compare_polygons(res.polygon, Polygon(res_points))
 
 def compare_polygons(p1: Polygon, p2: Polygon, accuracy: int = 3):
     assert len(p1.points) == len(p2.points), "Polygons have different number of points."

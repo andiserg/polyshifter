@@ -38,6 +38,17 @@ class Segment:
             if negative else Point(direction.y, -direction.x)
         )
 
+    def get_midpoint(self) -> Point:
+        mid_x = (self.p1.x + self.p2.x) / 2
+        mid_y = (self.p1.y + self.p2.y) / 2
+        return Point(mid_x, mid_y)
+
+    def is_same_dir(self, segment: "Segment") -> bool:
+        dir1 = self.direction_vector().get_normalized()
+        dir2 = segment.direction_vector().get_normalized()
+        dot = dir1.x * dir2.x + dir1.y * dir2.y
+        return abs(dir1.x * dir2.y - dir1.y * dir2.x) < 1e-9 and dot > 0
+
     def line_intersection(self, segment: "Segment") -> Point | None:
         x1, y1 = self.p1.x, self.p1.y
         x2, y2 = self.p2.x, self.p2.y
@@ -54,12 +65,6 @@ class Segment:
         intersection_y = y1 + t * (y2 - y1)
 
         return Point(intersection_x, intersection_y)
-
-    def is_same_dir(self, segment: "Segment") -> bool:
-        dir1 = self.direction_vector().get_normalized()
-        dir2 = segment.direction_vector().get_normalized()
-        dot = dir1.x * dir2.x + dir1.y * dir2.y
-        return abs(dir1.x * dir2.y - dir1.y * dir2.x) < 1e-9 and dot > 0
 
 
 @dataclass(slots=True)

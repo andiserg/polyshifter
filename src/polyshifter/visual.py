@@ -3,24 +3,25 @@ from dataclasses import dataclass
 from matplotlib import pyplot as plt
 from matplotlib.axes import Axes
 
-from polyshifter.models import Polygon
+from polyshifter.models import Polygon, Segment
 
 
 @dataclass(slots=True, frozen=True)
 class PolygonsPlotVisualization:
     original_polygon: Polygon
     offset_polygon: Polygon
+    offset_arrow: Segment
 
     def plot(self) -> None:
         fig, ax = plt.subplots(figsize=(10, 8))
         self._plot_polygon(ax, self.offset_polygon, "red", "Offset Polygon")
         self._plot_polygon(ax, self.original_polygon, "blue", "Original Polygon")
+        self._plot_arrow(ax)
 
         ax.set_title("Polygon Segment Offset")
-        ax.set_xlabel("X-coordinate")
-        ax.set_ylabel("Y-coordinate")
+        ax.set_xlabel("X-coord")
+        ax.set_ylabel("Y-coord")
         ax.legend()
-        ax.grid(True)
         ax.set_aspect("equal", adjustable="box")
         plt.show()
 
@@ -30,11 +31,17 @@ class PolygonsPlotVisualization:
 
         ax.plot(x_coords, y_coords, color=color, label=label, marker="o", linestyle="-")
 
-        for i, p in enumerate(polygon.points):
-            if all((
-                i == len(polygon.points) - 1,
-                polygon.points[0] == polygon.points[-1],
-                len(polygon.points) > 1,
-            )):
-                continue
-            ax.text(float(p.x), float(p.y), f"({p.x:2f},{p.y:2f})", fontsize=8, ha="right")
+        for x, y in zip(x_coords[:-1], y_coords[:-1], strict=True):
+            ax.text(float(x), float(y), f"({x},{y})", fontsize=8, ha="right")
+
+    def _plot_arrow(self, ax: Axes) -> None:
+        start = self.offset_arrow.p1
+        end = self.offset_arrow.p2
+
+        ax.annotate(
+            "",
+            xy=(float(end.x), float(end.y)),
+            xytext=(float(start.x), float(start.y)),
+            arrowprops={"arrowstyle": "->", "color": "green", "lw": 2},
+            annotation_clip=False,
+        )

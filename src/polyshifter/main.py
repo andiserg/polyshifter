@@ -18,13 +18,12 @@ def main() -> None:
     )
 
     try:
-        offset_polygon = offset_segment(
-            original_polygon, segment_index, offset_magnitude,
-        )
+        result = offset_segment(original_polygon, segment_index, offset_magnitude)
 
         visualization = PolygonsPlotVisualization(
             original_polygon=original_polygon,
-            offset_polygon=offset_polygon,
+            offset_polygon=result.polygon,
+            offset_arrow=result.offset_arrow,
         )
 
         visualization.plot()
