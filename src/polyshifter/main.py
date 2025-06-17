@@ -17,7 +17,9 @@ def main():
     )
 
     try:
-        offset_polygon = original_polygon.offset_segment(segment_index, offset_magnitude)
+        offset_polygon = offset_segment(
+            original_polygon, segment_index, offset_magnitude,
+        )
 
         visualization = PolygonsPlotVisualization(
             original_polygon=original_polygon,

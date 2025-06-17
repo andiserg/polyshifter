@@ -75,64 +75,8 @@ class Polygon:
 
         self.segments = self._create_segments()
 
-    def _create_segments(self):
-        segments = []
-        for i in range(len(self.points) - 1):
-            segments.append(Segment(self.points[i], self.points[i + 1]))
-        return segments
-
-    def offset_segment(self, segment_index: int, offset_magnitude: float) -> 'Polygon':
-        if not (0 <= segment_index < len(self.segments)):
-            raise IndexError("Segment index out of bounds.")
-
-        offset_magnitude = Fraction(str(offset_magnitude))
-
-        original_segment = self.segments[segment_index]
-        perp_vec = original_segment.perpendicular_vector(offset_magnitude < 0)
-
-        norm_perp = perp_vec.get_normalized()
-
-        offset_segment = Segment(
-            Point(
-                original_segment.p1.x + norm_perp.x * abs(offset_magnitude),
-                original_segment.p1.y + norm_perp.y * abs(offset_magnitude),
-            ),
-            Point(
-                original_segment.p2.x + norm_perp.x * abs(offset_magnitude),
-                original_segment.p2.y + norm_perp.y * abs(offset_magnitude)
-            )
-        )
-
-        prev_index = (segment_index - 1 + len(self.segments)) % len(self.segments)
-        next_index = (segment_index + 1) % len(self.segments)
-
-        prev_segment = self.segments[prev_index]
-        next_segment = self.segments[next_index]
-
-        new_p1 = prev_segment.line_intersection(offset_segment)
-        new_p2 = offset_segment.line_intersection(next_segment)
-
-        if not all((new_p1, new_p2)):
-            raise ValueError(
-                f"Could not find intersection for the first point of segment {segment_index}. "
-                "Previous segment is parallel to the offset segment's shifted line."
-            )
-
-        new_points_coords_list = [(p.x, p.y) for p in self.points[:-1]]
-        new_points_coords_list[segment_index] = (new_p1.x, new_p1.y)
-        new_points_coords_list[(segment_index + 1) % (len(self.points) - 1)] = (new_p2.x, new_p2.y)
-
-        if new_points_coords_list:
-            new_points_coords_list.append(new_points_coords_list[0])
-
-        res = Polygon(new_points_coords_list)
-
-        if not all((
-            next_segment.is_same_dir(res.segments[next_index]),
-            prev_segment.is_same_dir(res.segments[prev_index])
-        )):
-            raise ValueError(
-                f"Offset segment {segment_index} does not preserve the original polygon's direction."
-            )
-
-        return res
+    def _create_segments(self) -> list[Segment]:
+        return [
+            Segment(point, self.points[i + 1])
+            for i, point in enumerate(self.points[:-1])
+        ]

@@ -3,7 +3,8 @@ from fractions import Fraction
 import pytest
 import math
 
-from polyshifter.geometry import Polygon
+from polyshifter.models import Polygon
+from polyshifter.services import offset_segment
 from tests.params import POLYGON_OFFSET_PARAMS
 
 
@@ -11,12 +12,12 @@ from tests.params import POLYGON_OFFSET_PARAMS
 def test_map(points, seg_idx, offset, res_points):
     polygon = Polygon(points)
 
-    if res_points == ValueError:
+    if res_points is ValueError:
         with pytest.raises(ValueError):
-            polygon.offset_segment(seg_idx, offset)
+            offset_segment(polygon, seg_idx, offset)
     else:
-        offset_polygon = polygon.offset_segment(seg_idx, offset)
-        compare_polygons(offset_polygon, Polygon(res_points))
+        res_polygon = offset_segment(polygon, seg_idx, offset)
+        compare_polygons(res_polygon, Polygon(res_points))
 
 def compare_polygons(p1: Polygon, p2: Polygon, accuracy: int = 3):
     assert len(p1.points) == len(p2.points), "Polygons have different number of points."

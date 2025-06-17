@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from matplotlib import pyplot as plt
 
-from polyshifter.geometry import Polygon
+from polyshifter.models import Polygon
 
 
 @dataclass(slots=True, frozen=True)
