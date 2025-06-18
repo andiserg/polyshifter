@@ -1,6 +1,6 @@
 from polyshifter import cli
 from polyshifter.services import offset_segment
-from polyshifter.visual import PolygonsPlotVisualization
+from polyshifter.adapters import PolygonsPlotVisualizationAdapter
 
 def main() -> None:
     coords = cli.mapped_input(
@@ -20,7 +20,7 @@ def main() -> None:
     try:
         result = offset_segment(coords, segment_index, offset_magnitude)
 
-        visualization = PolygonsPlotVisualization(
+        visualization = PolygonsPlotVisualizationAdapter(
             original_polygon=result.orig_polygon,
             offset_polygon=result.result_polygon,
             offset_arrow=result.offset_arrow,

@@ -7,7 +7,7 @@ from polyshifter.models import Polygon, Segment
 
 
 @dataclass(slots=True, frozen=True)
-class PolygonsPlotVisualization:
+class PolygonsPlotVisualizationAdapter:
     original_polygon: Polygon
     offset_polygon: Polygon
     offset_arrow: Segment
